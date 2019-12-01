@@ -14,15 +14,36 @@ import java.util.List;
 public class Main {
     private static final Color fillColor = new Color(0x48a9a6);
     private static final Color backgroundColor = Color.white;
-    private static final double threshold = 0.7;
+    private static final String inputPath = System.getProperty("image.input", "man-tipping-hand.png");
+    private static final String outputPath = System.getProperty("image.output", "avatar.png");
+
+    private static final double threshold;
+
+    static {
+        String thresholdProp = System.getProperty("color.threshold", "0.7");
+
+        try {
+            threshold = Double.parseDouble(thresholdProp);
+
+            if (threshold < 0.0 || threshold > 1.0) {
+                System.err.println("Threshold must be between 0.0 and 1.0");
+                System.exit(2);
+            }
+        } catch (NumberFormatException e) {
+            System.err.println(String.format("Threshold must be a number, got %s", thresholdProp));
+
+            System.exit(1);
+            throw e;
+        }
+    }
 
     public static void main(String[] args) throws IOException {
-        BufferedImage image = readImage("man-tipping-hand.png");
+        BufferedImage image = readImage(inputPath);
         BufferedImage opaqueImage = transparentToOpaque(image);
         BufferedImage greyscaleImage = imageToGreyscale(opaqueImage);
         BufferedImage recoloredImage = recolorImage(greyscaleImage);
 
-        saveImage("avatar.png", recoloredImage);
+        saveImage(outputPath, recoloredImage);
     }
 
     /**
