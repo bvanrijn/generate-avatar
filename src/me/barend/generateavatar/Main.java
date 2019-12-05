@@ -56,10 +56,12 @@ public class Main {
     private static void printProperties() {
         Map<String, Object> properties = new HashMap<>();
 
+        properties.put("color.threshold", threshold);
         properties.put("color.fill", fillColor);
         properties.put("color.background", backgroundColor);
         properties.put("image.input", inputPath);
         properties.put("image.output", outputPath);
+        properties.put("debug", Boolean.parseBoolean(System.getProperty("debug")));
 
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             System.err.println(String.format("%s: %s", property.getKey(), property.getValue()));
