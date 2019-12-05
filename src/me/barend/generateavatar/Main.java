@@ -55,27 +55,41 @@ public class Main {
 
     private static void setColor(ColorToChange colorToChange, Color defaultColor) throws NoSuchFieldException, IllegalAccessException {
         List<String> namedColors = getNamedColors();
-        String prop = System.getProperty(colorToChange == ColorToChange.background ? "color.background" : "color.fill");
 
-        if (prop != null) {
-            if (namedColors.contains(prop.toUpperCase())) {
-                if (colorToChange == ColorToChange.background) {
+        switch (colorToChange) {
+            case background: {
+                String prop = System.getProperty("color.background");
+
+                if (prop == null) {
+                    backgroundColor = defaultColor;
+
+                    return;
+                }
+
+                if (namedColors.contains(prop.toUpperCase())) {
                     backgroundColor = (Color) Color.class.getField(prop).get(Color.class);
                 } else {
-                    fillColor = (Color) Color.class.getField(prop).get(Color.class);
-                }
-            } else {
-                if (colorToChange == ColorToChange.background) {
                     backgroundColor = defaultColor;
+                }
+
+                break;
+            }
+            case fill: {
+                String prop = System.getProperty("color.fill");
+
+                if (prop == null) {
+                    fillColor = defaultColor;
+
+                    return;
+                }
+
+                if (namedColors.contains(prop.toUpperCase())) {
+                    fillColor = (Color) Color.class.getField(prop).get(Color.class);
                 } else {
                     fillColor = defaultColor;
                 }
-            }
-        } else {
-            if (colorToChange == ColorToChange.background) {
-                backgroundColor = defaultColor;
-            } else {
-                fillColor = defaultColor;
+
+                break;
             }
         }
     }
