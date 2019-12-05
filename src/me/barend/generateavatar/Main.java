@@ -81,7 +81,7 @@ public class Main {
     }
 
     /**
-     * Returns a list of named colors (that is, the fields on the {@link Color} class)
+     * Returns a list of named colors (that is, the fields on the {@link Color} class).
      */
     private static List<String> getNamedColors() {
         Field[] colorFields = Color.class.getFields();
