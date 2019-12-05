@@ -59,23 +59,15 @@ public class Main {
     }
 
     private static void setColor(ColorToChange colorToChange, Color defaultColor) throws NoSuchFieldException, IllegalAccessException {
-        Class<Color> clazz = Color.class;
-
-        Field[] colorFields = clazz.getFields();
-        List<String> colorNames = new ArrayList<>(colorFields.length);
-
-        for (Field colorField : colorFields) {
-            colorNames.add(colorField.getName().toUpperCase());
-        }
-
+        List<String> namedColors = getNamedColors();
         String prop = System.getProperty(colorToChange == ColorToChange.background ? "color.background" : "color.fill");
 
         if (prop != null) {
-            if (colorNames.contains(prop.toUpperCase())) {
+            if (namedColors.contains(prop.toUpperCase())) {
                 if (colorToChange == ColorToChange.background) {
-                    backgroundColor = (Color) clazz.getField(prop).get(Color.class);
+                    backgroundColor = (Color) Color.class.getField(prop).get(Color.class);
                 } else {
-                    fillColor = (Color) clazz.getField(prop).get(Color.class);
+                    fillColor = (Color) Color.class.getField(prop).get(Color.class);
                 }
             } else {
                 if (colorToChange == ColorToChange.background) {
@@ -91,6 +83,20 @@ public class Main {
                 fillColor = defaultColor;
             }
         }
+    }
+
+    /**
+     * Returns a list of named colors (that is, the fields on the {@link Color} class)
+     */
+    private static List<String> getNamedColors() {
+        Field[] colorFields = Color.class.getFields();
+        List<String> colorNames = new ArrayList<>(colorFields.length);
+
+        for (Field colorField : colorFields) {
+            colorNames.add(colorField.getName().toUpperCase());
+        }
+
+        return colorNames;
     }
 
     public static void main(String[] args) throws IOException {
