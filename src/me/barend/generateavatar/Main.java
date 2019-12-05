@@ -53,11 +53,6 @@ public class Main {
         }
     }
 
-    private enum ColorToChange {
-        background,
-        fill
-    }
-
     private static void setColor(ColorToChange colorToChange, Color defaultColor) throws NoSuchFieldException, IllegalAccessException {
         List<String> namedColors = getNamedColors();
         String prop = System.getProperty(colorToChange == ColorToChange.background ? "color.background" : "color.fill");
