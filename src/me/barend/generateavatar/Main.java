@@ -19,6 +19,7 @@ public class Main {
     private static Color backgroundColor = getColor("color.background", Color.white);
     private static final String inputPath = System.getProperty("image.input", "man-tipping-hand.png");
     private static final String outputPath = System.getProperty("image.output", "avatar.png");
+    private static final boolean isDebugActive = Boolean.parseBoolean(System.getProperty("debug", "false"));
 
     private static final double threshold;
 
@@ -41,7 +42,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        if (Boolean.parseBoolean(System.getProperty("debug"))) {
+        if (isDebugActive) {
             printProperties();
         }
 
@@ -61,7 +62,7 @@ public class Main {
         properties.put("color.background", backgroundColor);
         properties.put("image.input", inputPath);
         properties.put("image.output", outputPath);
-        properties.put("debug", Boolean.parseBoolean(System.getProperty("debug")));
+        properties.put("debug", isDebugActive);
 
         for (Map.Entry<String, Object> property : properties.entrySet()) {
             System.err.println(String.format("%s: %s", property.getKey(), property.getValue()));
