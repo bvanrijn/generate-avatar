@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-    private static Color fillColor;
-    private static Color backgroundColor;
+    private static Color fillColor = getColor("color.fill", new Color(0x48a9a6));
+    private static Color backgroundColor = getColor("color.background", Color.white);
     private static final String inputPath = System.getProperty("image.input", "man-tipping-hand.png");
     private static final String outputPath = System.getProperty("image.output", "avatar.png");
 
@@ -52,45 +52,23 @@ public class Main {
             System.err.println(String.format("%s: %s", property.getKey(), property.getValue()));
         }
     }
-
-    private static void setColor(ColorToChange colorToChange, Color defaultColor) throws NoSuchFieldException, IllegalAccessException {
+    
+    private static Color getColor(String key, Color defaultColor) {
         List<String> namedColors = getNamedColors();
+        String prop = System.getProperty(key);
 
-        switch (colorToChange) {
-            case background: {
-                String prop = System.getProperty("color.background");
+        if (prop == null || !namedColors.contains(prop.toUpperCase())) {
+            return defaultColor;
+        }
 
-                if (prop == null) {
-                    backgroundColor = defaultColor;
+        try {
+            return (Color) Color.class.getField(prop).get(Color.class);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            System.err.println(String.format("Attempted to use an unknown color %s, using %s instead", prop, defaultColor));
 
-                    return;
-                }
+            e.printStackTrace();
 
-                if (namedColors.contains(prop.toUpperCase())) {
-                    backgroundColor = (Color) Color.class.getField(prop).get(Color.class);
-                } else {
-                    backgroundColor = defaultColor;
-                }
-
-                break;
-            }
-            case fill: {
-                String prop = System.getProperty("color.fill");
-
-                if (prop == null) {
-                    fillColor = defaultColor;
-
-                    return;
-                }
-
-                if (namedColors.contains(prop.toUpperCase())) {
-                    fillColor = (Color) Color.class.getField(prop).get(Color.class);
-                } else {
-                    fillColor = defaultColor;
-                }
-
-                break;
-            }
+            return defaultColor;
         }
     }
 
@@ -109,13 +87,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        try {
-            setColor(ColorToChange.background, new Color(0x48a9a6));
-            setColor(ColorToChange.fill, Color.white);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
         if (Boolean.parseBoolean(System.getProperty("debug"))) {
             printProperties();
         }
