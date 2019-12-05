@@ -40,6 +40,19 @@ public class Main {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        if (Boolean.parseBoolean(System.getProperty("debug"))) {
+            printProperties();
+        }
+
+        BufferedImage image = readImage(inputPath);
+        BufferedImage opaqueImage = transparentToOpaque(image);
+        BufferedImage greyscaleImage = imageToGreyscale(opaqueImage);
+        BufferedImage recoloredImage = recolorImage(greyscaleImage);
+
+        saveImage(outputPath, recoloredImage);
+    }
+
     private static void printProperties() {
         Map<String, Object> properties = new HashMap<>();
 
@@ -52,7 +65,7 @@ public class Main {
             System.err.println(String.format("%s: %s", property.getKey(), property.getValue()));
         }
     }
-    
+
     private static Color getColor(String key, Color defaultColor) {
         List<String> namedColors = getNamedColors();
         String prop = System.getProperty(key);
@@ -84,19 +97,6 @@ public class Main {
         }
 
         return colorNames;
-    }
-
-    public static void main(String[] args) throws IOException {
-        if (Boolean.parseBoolean(System.getProperty("debug"))) {
-            printProperties();
-        }
-
-        BufferedImage image = readImage(inputPath);
-        BufferedImage opaqueImage = transparentToOpaque(image);
-        BufferedImage greyscaleImage = imageToGreyscale(opaqueImage);
-        BufferedImage recoloredImage = recolorImage(greyscaleImage);
-
-        saveImage(outputPath, recoloredImage);
     }
 
     /**
