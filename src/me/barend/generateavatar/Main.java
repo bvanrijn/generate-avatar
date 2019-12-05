@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-    private static Color fillColor = getColor("color.fill", new Color(0x48a9a6));
-    private static Color backgroundColor = getColor("color.background", Color.white);
+    private static final Color fillColor = getColor("color.fill", new Color(0x48a9a6));
+    private static final Color backgroundColor = getColor("color.background", Color.white);
     private static final String inputPath = System.getProperty("image.input", "man-tipping-hand.png");
     private static final String outputPath = System.getProperty("image.output", "avatar.png");
     private static final boolean isDebugActive = Boolean.parseBoolean(System.getProperty("debug", "false"));
