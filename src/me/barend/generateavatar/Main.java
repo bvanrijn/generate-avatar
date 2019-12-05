@@ -8,12 +8,15 @@ import java.awt.image.ColorConvertOp;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
-    private static final Color fillColor = new Color(0x48a9a6);
-    private static final Color backgroundColor = Color.white;
+    private static Color fillColor;
+    private static Color backgroundColor;
     private static final String inputPath = System.getProperty("image.input", "man-tipping-hand.png");
     private static final String outputPath = System.getProperty("image.output", "avatar.png");
 
@@ -37,7 +40,71 @@ public class Main {
         }
     }
 
+    private static void printProperties() {
+        Map<String, Object> properties = new HashMap<>();
+
+        properties.put("color.fill", fillColor);
+        properties.put("color.background", backgroundColor);
+        properties.put("image.input", inputPath);
+        properties.put("image.output", outputPath);
+
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
+            System.err.println(String.format("%s: %s", property.getKey(), property.getValue()));
+        }
+    }
+
+    private enum ColorToChange {
+        background,
+        fill
+    }
+
+    private static void setColor(ColorToChange colorToChange, Color defaultColor) throws NoSuchFieldException, IllegalAccessException {
+        Class<Color> clazz = Color.class;
+
+        Field[] colorFields = clazz.getFields();
+        List<String> colorNames = new ArrayList<>(colorFields.length);
+
+        for (Field colorField : colorFields) {
+            colorNames.add(colorField.getName().toUpperCase());
+        }
+
+        String prop = System.getProperty(colorToChange == ColorToChange.background ? "color.background" : "color.fill");
+
+        if (prop != null) {
+            if (colorNames.contains(prop.toUpperCase())) {
+                if (colorToChange == ColorToChange.background) {
+                    backgroundColor = (Color) clazz.getField(prop).get(Color.class);
+                } else {
+                    fillColor = (Color) clazz.getField(prop).get(Color.class);
+                }
+            } else {
+                if (colorToChange == ColorToChange.background) {
+                    backgroundColor = defaultColor;
+                } else {
+                    fillColor = defaultColor;
+                }
+            }
+        } else {
+            if (colorToChange == ColorToChange.background) {
+                backgroundColor = defaultColor;
+            } else {
+                fillColor = defaultColor;
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
+        try {
+            setColor(ColorToChange.background, new Color(0x48a9a6));
+            setColor(ColorToChange.fill, Color.white);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        if (Boolean.parseBoolean(System.getProperty("debug"))) {
+            printProperties();
+        }
+
         BufferedImage image = readImage(inputPath);
         BufferedImage opaqueImage = transparentToOpaque(image);
         BufferedImage greyscaleImage = imageToGreyscale(opaqueImage);
