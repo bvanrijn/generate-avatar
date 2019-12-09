@@ -1,5 +1,14 @@
 # GenerateAvatar
 
+<p align="center">
+  <a href="https://github.com/bvanrijn/generate-avatar/actions?query=workflow%3ARelease">
+    <img src="https://github.com/bvanrijn/generate-avatar/workflows/Release/badge.svg" />
+  </a>
+  <a href="https://codeclimate.com/github/bvanrijn/generate-avatar/maintainability">
+    <img src="https://api.codeclimate.com/v1/badges/1d13752b7c44ff236014/maintainability" />
+  </a>
+</p>
+
 I originally wrote this program in [Clojure][]. I rewrote it from scratch last night,
 and it is **46% faster** and has **22% fewer parentheses**.
 
