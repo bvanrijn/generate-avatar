@@ -11,9 +11,9 @@ var htmlColors = [...document.querySelector("#portfolio").children]
   .sort(([namedColorA, _ar], [namedColorB, _br]) => namedColorA.localeCompare(namedColorB))
   .map(
     ([namedColor, colorDecl]) =>
-      `static final Color ${namedColor.toUpperCase()} = ${colorDecl};`
+      `public static final Color ${namedColor.toUpperCase()} = ${colorDecl};`
   );
 
-var package = "me.barend.generateavatar";
-var preamble = `//\n// This file was automatically generated using a script. DO NOT EDIT MANUALLY.\n//\n\npackage ${package};\n\nimport java.awt.*;\n`;
+var pkg = "me.barend.generateavatar";
+var preamble = `//\n// This file was automatically generated using a script. DO NOT EDIT MANUALLY.\n//\n\npackage ${pkg};\n\nimport java.awt.Color;\n`;
 console.log(`${preamble}\nclass HTMLColor {\n${htmlColors.join("\n")}\n}\n`);
