@@ -54,6 +54,9 @@ public class Main {
         saveImage(outputPath, recoloredImage);
     }
 
+    /**
+     * Print the values of important properties, such as <code>color.fill</code>.
+     */
     private static void printProperties() {
         Map<String, Object> properties = new HashMap<>();
 
@@ -70,18 +73,31 @@ public class Main {
     }
 
     private static Color getColor(String key, Color defaultColor) {
-        List<String> namedColors = getNamedColors();
         String prop = System.getProperty(key);
 
-        if (prop == null || !namedColors.contains(prop.toUpperCase())) {
+        if (prop == null) {
+            return defaultColor;
+        }
+
+        prop = prop.toUpperCase();
+
+        List<String> namedColors = getNamedColors();
+        List<String> htmlColors = getHTMLColors();
+
+        Class<?> clazz;
+
+        if (namedColors.contains(prop)) {
+            clazz = Color.class;
+        } else if (htmlColors.contains(prop)) {
+            clazz = HTMLColor.class;
+        } else {
             return defaultColor;
         }
 
         try {
-            return (Color) Color.class.getField(prop).get(Color.class);
+            return (Color) clazz.getField(prop).get(clazz);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             System.err.println(String.format("Attempted to use an unknown color %s, using %s instead", prop, defaultColor));
-
             e.printStackTrace();
 
             return defaultColor;
@@ -89,17 +105,35 @@ public class Main {
     }
 
     /**
+     * Get the names of the public fields of <code>clazz</code> with type {@link Color}.
+     */
+    private static List<String> getColorFields(Class<?> clazz) {
+        Field[] fields = clazz.getFields();
+        List<String> fieldNames = new ArrayList<>(fields.length);
+
+        for (Field field : fields) {
+            if (field.getType() != Color.class) {
+                continue;
+            }
+
+            fieldNames.add(field.getName().toUpperCase());
+        }
+
+        return fieldNames;
+    }
+
+    /**
      * Returns a list of named colors (that is, the fields on the {@link Color} class).
      */
     private static List<String> getNamedColors() {
-        Field[] colorFields = Color.class.getFields();
-        List<String> colorNames = new ArrayList<>(colorFields.length);
+        return getColorFields(Color.class);
+    }
 
-        for (Field colorField : colorFields) {
-            colorNames.add(colorField.getName().toUpperCase());
-        }
-
-        return colorNames;
+    /**
+     * Returns a list of HTML colors (that is, the fields on the {@link HTMLColor} class).
+     */
+    private static List<String> getHTMLColors() {
+        return getColorFields(HTMLColor.class);
     }
 
     /**
